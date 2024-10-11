@@ -1,16 +1,63 @@
 const express = require("express");
 const app=express();
-const {adminAuth}=require("./middleware/auth")
+const connectDB=require("./config/database");
+const {adminAuth}=require("./middleware/auth");
+const User=require("./models/user.js");
 
-app.use("/admin",adminAuth)
-
-app.get("/admin/getAllData",(req,res)=>{
-    res.send("All Data sent")
+app.post("/signup",async(req,res)=>{
+    const user=new User({
+        firstName:"Dhiyanesh",
+        lastName:"K",
+        emailId:"dhiyanesh177@gmail.com",
+        password:"Dhiyan@123",
+    });
+    try{
+        await user.save()
+        res.send("user added successfully");
+    }
+    catch(err)
+    {
+        res.status(400).send("Error saving the user :" + err.message);
+    }
 })
-app.get("/admin/deleteUser",(req,res)=>{
 
-    res.send("Deleted a user");
+connectDB()
+.then(()=>{
+    console.log("DB connection established...");  
+    app.listen(7777,()=>{
+        console.log("server is running....");
+    })
 })
+.catch((err)=>{
+    console.error("DB can't be connected");
+})
+
+
+
+
+
+
+// app.use("/admin",adminAuth)
+
+// app.get("/admin/getAllData",(req,res)=>{
+//     console.log(a)
+//     res.send("All Data sent")
+// })
+// app.get("/admin/deleteUser",(req,res)=>{
+
+//     res.send("Deleted a user");
+// })
+// app.use("/",(req,res)=>{
+//     res.send("hello");
+// })
+// app.use((err,req,res,next)=>{
+    
+//     console.log(err.stack)
+//         res.send("error occured");
+    
+// })
+
+
 
 
 // app.get("/admin/getAllData",(req,res)=>{
@@ -109,6 +156,7 @@ app.get("/admin/deleteUser",(req,res)=>{
 // app.use("/",(req,res)=>{
 //     res.send("Hello from server!");
 // })
-app.listen(7777,()=>{
-    console.log("Server is successfully listening on port 7777...");
-});
+
+// app.listen(7777,()=>{
+//     console.log("Server is successfully listening on port 7777...");
+// });
