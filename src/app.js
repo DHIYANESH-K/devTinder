@@ -40,6 +40,32 @@ app.post("/signup",async(req,res)=>{
     }
 });
 
+app.post("/login",async(req,res)=>{
+    try{
+        const {emailId,password}=req.body;
+        let user=await User.findOne({emailId:emailId});
+        if(!user)
+        {
+            throw new Error("email not in db");
+        }
+        let isUser=await bcrypt.compare(password,user.password);
+        if(isUser)
+        {
+            console.log("...");
+            res.send("Login successfully!!!");
+        }
+        else{
+            console.log("///")
+            throw new Error("Password not valid");
+        }
+    }
+    catch(err)
+    {
+        res.status(400).send("Error :"+ err.message);
+    }
+})
+
+
 app.get("/user",async(req,res)=>{
     console.log(req.body)
     const userEmail=req.body.emailId;
@@ -87,7 +113,7 @@ app.patch("/user/:userId",async(req,res)=>{
     const data=req.body;
     // console.log(data);
     try{
-        const ALLOWED_UPDATES=["photoURL","about","gender","age","skills"]
+        const ALLOWED_UPDATES=["photoURL","about","gender","age","skills","password"]
         const isUpdateAllowed=Object.keys(data).every((k)=>ALLOWED_UPDATES.includes(k));
         if(!isUpdateAllowed)
         {
